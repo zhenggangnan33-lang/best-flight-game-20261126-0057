@@ -1,93 +1,77 @@
-// Keyboard and mouse. The flight controls are keys; the menus are
-// clickable buttons, so the game plays with keyboard and mouse as the
-// bounty asks. Nothing here knows about the game — it only reports
-// what is pressed and where the pointer is.
+// Keyboard and pointer input for Aurora Squadron. Held keys steer and work the
+// throttle; one-shot presses (confirm, action, pause, hangar, feats) are queued as
+// bit flags and taken once by the loop, so a press between two frames is never
+// lost and never counted twice.
 
-export function createInput(canvas) {
-  const keys = new Set();
-  const pressed = new Set(); // keys hit since the last read (edge triggers)
-  const mouse = { x: 0, y: 0, clicked: false, clickX: 0, clickY: 0 };
+export const ACTION_CONFIRM = 1;
+export const ACTION_PAUSE = 2;
+export const ACTION_HANGAR = 4;
+export const ACTION_FEATS = 8;
+export const ACTION_BACK = 16;
 
-  const KEYMAP = {
-    ArrowUp: 'throttleUp', KeyW: 'throttleUp',
-    ArrowDown: 'throttleDown', KeyS: 'throttleDown',
-    ArrowLeft: 'pitchUp', KeyA: 'pitchUp',
-    ArrowRight: 'pitchDown', KeyD: 'pitchDown',
-    KeyF: 'flaps',
-    Space: 'drop',
-    KeyP: 'pause',
-    KeyM: 'mute',
-    Enter: 'confirm',
-    Escape: 'back',
-  };
+const THROTTLE_UP = new Set(['ArrowUp', 'KeyW']);
+const THROTTLE_DOWN = new Set(['ArrowDown', 'KeyS']);
+const TURN_LEFT = new Set(['ArrowLeft', 'KeyA']);
+const TURN_RIGHT = new Set(['ArrowRight', 'KeyD']);
+const CONFIRM = new Set(['Space', 'Enter']);
+const PAUSE = new Set(['KeyP', 'Escape']);
+const HANGAR = new Set(['KeyH']);
+const FEATS = new Set(['KeyF']);
 
-  function onKeyDown(e) {
-    const action = KEYMAP[e.code];
-    if (!action) return;
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
-    if (!keys.has(action)) pressed.add(action);
-    keys.add(action);
-  }
-  function onKeyUp(e) {
-    const action = KEYMAP[e.code];
-    if (action) keys.delete(action);
-  }
-  function onMouseMove(e) {
-    const r = canvas.getBoundingClientRect();
-    mouse.x = (e.clientX - r.left) * (canvas.width / r.width);
-    mouse.y = (e.clientY - r.top) * (canvas.height / r.height);
-  }
-  function onMouseDown(e) {
-    onMouseMove(e);
-    mouse.clicked = true;
-    mouse.clickX = mouse.x;
-    mouse.clickY = mouse.y;
-  }
+export function createInput(target) {
+  let throttleUp = false;
+  let throttleDown = false;
+  let turnLeft = false;
+  let turnRight = false;
+  let actions = 0;
 
-  window.addEventListener('keydown', onKeyDown);
-  window.addEventListener('keyup', onKeyUp);
-  canvas.addEventListener('mousemove', onMouseMove);
-  canvas.addEventListener('mousedown', onMouseDown);
+  window.addEventListener('keydown', (event) => {
+    if (THROTTLE_UP.has(event.code)) throttleUp = true;
+    else if (THROTTLE_DOWN.has(event.code)) throttleDown = true;
+    else if (TURN_LEFT.has(event.code)) turnLeft = true;
+    else if (TURN_RIGHT.has(event.code)) turnRight = true;
+    else if (CONFIRM.has(event.code)) {
+      if (!event.repeat) actions |= ACTION_CONFIRM;
+    } else if (PAUSE.has(event.code)) {
+      if (!event.repeat) actions |= ACTION_PAUSE | ACTION_BACK;
+    } else if (HANGAR.has(event.code)) {
+      if (!event.repeat) actions |= ACTION_HANGAR;
+    } else if (FEATS.has(event.code)) {
+      if (!event.repeat) actions |= ACTION_FEATS;
+    } else return;
+    event.preventDefault();
+  });
+  window.addEventListener('keyup', (event) => {
+    if (THROTTLE_UP.has(event.code)) throttleUp = false;
+    else if (THROTTLE_DOWN.has(event.code)) throttleDown = false;
+    else if (TURN_LEFT.has(event.code)) turnLeft = false;
+    else if (TURN_RIGHT.has(event.code)) turnRight = false;
+  });
+  // A key released while the tab is hidden never sends keyup: let go of everything on blur.
+  window.addEventListener('blur', () => {
+    throttleUp = false;
+    throttleDown = false;
+    turnLeft = false;
+    turnRight = false;
+  });
+  target.addEventListener('pointerdown', () => {
+    actions |= ACTION_CONFIRM;
+  });
 
   return {
-    // Held-state flight input for this frame.
-    read() {
-      return {
-        throttleUp: keys.has('throttleUp'),
-        throttleDown: keys.has('throttleDown'),
-        pitchUp: keys.has('pitchUp'),
-        pitchDown: keys.has('pitchDown'),
-        flaps: false, // flaps toggles on the edge, read below
-        drop: pressed.has('drop'),
-        pause: pressed.has('pause'),
-        mute: pressed.has('mute'),
-        confirm: pressed.has('confirm'),
-        back: pressed.has('back'),
-      };
+    /** -1 to throttle down, 1 to throttle up, 0 for neither or both. */
+    throttle() {
+      return (throttleUp ? 1 : 0) - (throttleDown ? 1 : 0);
     },
-    // Edge-triggered actions, consumed once per frame.
-    consumeEdges() {
-      const edges = {
-        flaps: pressed.has('flaps'),
-        drop: pressed.has('drop'),
-        pause: pressed.has('pause'),
-        mute: pressed.has('mute'),
-        confirm: pressed.has('confirm'),
-        back: pressed.has('back'),
-      };
-      pressed.clear();
-      return edges;
+    /** -1 for left, 1 for right, 0 for neither or both. */
+    turn() {
+      return (turnRight ? 1 : 0) - (turnLeft ? 1 : 0);
     },
-    // A click inside a rectangle, in canvas coordinates.
-    clickedIn(x, y, w, h) {
-      if (!mouse.clicked) return false;
-      return mouse.clickX >= x && mouse.clickX <= x + w && mouse.clickY >= y && mouse.clickY <= y + h;
-    },
-    hoverIn(x, y, w, h) {
-      return mouse.x >= x && mouse.x <= x + w && mouse.y >= y && mouse.y <= y + h;
-    },
-    endFrame() {
-      mouse.clicked = false;
+    /** The one-shot presses since the last call, as ACTION_* flags. */
+    takeActions() {
+      const taken = actions;
+      actions = 0;
+      return taken;
     },
   };
 }

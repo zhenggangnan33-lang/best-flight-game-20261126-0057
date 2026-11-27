@@ -1,72 +1,49 @@
-// Feats: sixteen named achievements, checked against the signals the
-// mission layer emits and the pilot's career totals. Pure functions —
-// the game keeps one set of unlocked ids and this file decides what a
-// flight just earned.
+// Feats: 24 named achievements the squadron pins on its pilots. Each one names
+// the event that earns it, and the game checks them as the flying happens.
 
-import { FEATS } from './config.js';
+export const FEATS = [
+  { id: 'first-light', name: 'First Light', blurb: 'Finish your first sortie.', test: (s) => s.sortiesDone >= 1 },
+  { id: 'night-owl', name: 'Night Owl', blurb: 'Land on water after dark.', test: (s) => s.nightLandings >= 1 },
+  { id: 'storm-rider', name: 'Storm Rider', blurb: 'Fly through a storm cell and live.', test: (s) => s.stormsFlown >= 1 },
+  { id: 'perfect-touchdown', name: 'Perfect Touchdown', blurb: 'Land with less than a whisper of sink.', test: (s) => s.perfectLandings >= 1 },
+  { id: 'century-club', name: 'Century Club', blurb: 'Rescue one hundred souls.', test: (s) => s.soulsRescued >= 100 },
+  { id: 'all-islands', name: 'All Islands', blurb: 'Visit every island in the chain.', test: (s) => s.islandsVisited >= 8 },
+  { id: 'gold-rush', name: 'Gold Rush', blurb: 'Earn five gold medals.', test: (s) => s.goldMedals >= 5 },
+  { id: 'speed-demon', name: 'Speed Demon', blurb: 'Beat a gold par by twenty seconds.', test: (s) => s.bestMargin >= 20 },
+  { id: 'gentle-hands', name: 'Gentle Hands', blurb: 'Finish a sortie with no damage at all.', test: (s) => s.cleanSorties >= 1 },
+  { id: 'fuel-saver', name: 'Fuel Saver', blurb: 'Land with more than half your fuel left.', test: (s) => s.fuelSaverLandings >= 1 },
+  { id: 'fog-runner', name: 'Fog Runner', blurb: 'Finish a sortie in sea fog.', test: (s) => s.fogSorties >= 1 },
+  { id: 'ice-breaker', name: 'Ice Breaker', blurb: 'Finish a sortie in icing cloud.', test: (s) => s.icingSorties >= 1 },
+  { id: 'lighthouse-keeper', name: 'Lighthouse Keeper', blurb: 'Deliver to Old Nils on Skrova.', test: (s) => s.done.includes('skrova-keeper') },
+  { id: 'mailman', name: 'Mailman', blurb: 'Deliver the mail to Værøy.', test: (s) => s.done.includes('vaeroy-mail') },
+  { id: 'whale-watcher', name: 'Whale Watcher', blurb: 'Photograph all three whale pods.', test: (s) => s.done.includes('whale-andenes') },
+  { id: 'firefighter', name: 'Firefighter', blurb: 'Put out the fire at Flakstad.', test: (s) => s.done.includes('flakstad-fire') },
+  { id: 'choir-master', name: 'Choir Master', blurb: 'Fly the Kabelvåg choir to its concert.', test: (s) => s.done.includes('kabelvag-choir') },
+  { id: 'aurora-hunter', name: 'Aurora Hunter', blurb: 'Photograph the aurora over Hamnøy.', test: (s) => s.done.includes('aurora-hamnoy') },
+  { id: 'long-haul', name: 'Long Haul', blurb: 'Fly the rescue to Røst and back.', test: (s) => s.done.includes('rost-rescue') },
+  { id: 'blizzard-survivor', name: 'Blizzard Survivor', blurb: 'Bring the snowplough driver home.', test: (s) => s.done.includes('leknes-blizzard') },
+  { id: 'midnight-runner', name: 'Midnight Runner', blurb: 'Fly the grand tour, Å to Svolvær.', test: (s) => s.done.includes('midnight-sun-run') },
+  { id: 'full-house', name: 'Full House', blurb: 'Own every refit in the hangar.', test: (s) => s.refitsOwned >= 20 },
+  { id: 'golden-squadron', name: 'Golden Squadron', blurb: 'Earn gold on all eighteen sorties.', test: (s) => s.goldMedals >= 18 },
+  { id: 'legend', name: 'Legend of Lofoten', blurb: 'Finish every sortie and earn every feat but this one.', test: (s) => s.sortiesDone >= 18 && s.featsEarned >= 23 },
+];
 
-export function createCareer() {
+/** A fresh, empty feats statistics object. */
+export function freshFeatStats() {
   return {
-    unlocked: new Set(),
-    rescues: 0,
-    waterLandings: 0,
-    placesVisited: new Set(),
-    goldSorties: new Set(),
-    medals: {}, // sortie id -> best medal
+    sortiesDone: 0, nightLandings: 0, stormsFlown: 0, perfectLandings: 0,
+    soulsRescued: 0, islandsVisited: 0, goldMedals: 0, bestMargin: 0,
+    cleanSorties: 0, fuelSaverLandings: 0, fogSorties: 0, icingSorties: 0,
+    done: [], refitsOwned: 0, featsEarned: 0,
   };
 }
 
-// Signals come from updateRun plus career-level facts the caller
-// passes in. Returns the feats unlocked by this flight.
-export function checkFeats(career, signals, context) {
+/** Return the feats newly earned by these stats, given the ones already held. */
+export function checkFeats(stats, held) {
   const earned = [];
-  const grant = (id) => {
-    if (!career.unlocked.has(id)) {
-      career.unlocked.add(id);
-      earned.push(FEATS.find((f) => f.id === id));
-    }
-  };
-  for (const s of signals) {
-    if (s.type === 'thread-needle') grant('thread-needle');
-    if (s.type === 'dead-stick') grant('dead-stick');
-    if (s.type === 'storm-rider') grant('storm-rider');
-    if (s.type === 'perfect-run') grant('perfect-run');
-    if (s.type === 'gentle-touch') grant('gentle-touch');
-    if (s.type === 'speed-demon') grant('speed-demon');
-    if (s.type === 'fuel-saver') grant('fuel-saver');
-    if (s.type === 'ring-master') grant('ring-master');
-    if (s.type === 'iron-hull') grant('iron-hull');
-    if (s.type === 'on-time') grant('on-time');
-    if (s.type === 'mountain-goat') grant('mountain-goat');
-    if (s.type === 'rescued') {
-      career.rescues += 1;
-      if (career.rescues >= 3) grant('lifesaver');
-    }
-    if (s.type === 'touchdown') {
-      career.waterLandings += 1;
-      if (career.waterLandings >= 5) grant('old-salt');
-    }
+  for (const feat of FEATS) {
+    if (held.includes(feat.id)) continue;
+    if (feat.test(stats)) earned.push(feat);
   }
-  if (context) {
-    if (context.sortieId === 'midnight-ferry' && context.finished) grant('night-owl');
-    if (context.finished) {
-      career.placesVisited.add(context.from);
-      career.placesVisited.add(context.to);
-      if (career.placesVisited.size >= 12) grant('cartographer');
-      if (context.medal === 'gold') {
-        career.goldSorties.add(context.sortieId);
-        if (career.goldSorties.size >= 12) grant('lofoten-legend');
-      }
-      if (context.medal) {
-        const prev = career.medals[context.sortieId];
-        const order = { bronze: 1, silver: 2, gold: 3 };
-        if (!prev || order[context.medal] > order[prev]) career.medals[context.sortieId] = context.medal;
-      }
-    }
-  }
-  return earned.filter(Boolean);
-}
-
-export function featList() {
-  return FEATS;
+  return earned;
 }

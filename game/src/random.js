@@ -1,11 +1,9 @@
-// A small seeded random source, so a sortie's fjords, rings and gusts
-// are the same every time the same sortie is flown — and so the
-// screenshot scenes are reproducible frames of the real game.
+// A small seeded random number generator: the same seed gives the same game,
+// which is what makes the screenshot scenes and the self-test repeatable.
 
-export function mulberry32(seed) {
-  let a = seed >>> 0;
-  return function next() {
-    a |= 0;
+export function createRandom(seed) {
+  let a = seed | 0;
+  return function random() {
     a = (a + 0x6d2b79f5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
@@ -13,21 +11,12 @@ export function mulberry32(seed) {
   };
 }
 
-export function makeRng(seed) {
-  const next = mulberry32(seed);
-  return {
-    next,
-    range(lo, hi) {
-      return lo + next() * (hi - lo);
-    },
-    int(lo, hi) {
-      return lo + Math.floor(next() * (hi - lo + 1));
-    },
-    pick(list) {
-      return list[Math.floor(next() * list.length)];
-    },
-    chance(p) {
-      return next() < p;
-    },
-  };
+/** Pick one element of an array with the seeded generator. */
+export function pick(random, array) {
+  return array[Math.floor(random() * array.length)];
+}
+
+/** A value in [min, max) from the seeded generator. */
+export function range(random, min, max) {
+  return min + random() * (max - min);
 }
