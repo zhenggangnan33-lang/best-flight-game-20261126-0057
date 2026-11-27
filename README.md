@@ -1,7 +1,8 @@
 # Aurora Squadron — Lofoten Air Rescue
 
-[![make.fun](https://make.fun/badge.svg)](https://make.fun/bounty/best-flight-game-20261126-0057)
-[![bounty](https://make.fun/bounty/best-flight-game-20261126-0057/badge.svg)](https://make.fun/bounty/best-flight-game-20261126-0057)
+[![make.fun · best-flight-game-20261126-0057](https://make.fun/badge/best-flight-game-20261126-0057.svg)](https://make.fun/bounty/best-flight-game-20261126-0057?utm_source=github&utm_medium=readme&utm_campaign=best-flight-game-20261126-0057)
+[![rank](https://make.fun/badge/best-flight-game-20261126-0057/zhenggangnan33-lang/best-flight-game-20261126-0057/rank.svg)](https://make.fun/bounty/best-flight-game-20261126-0057/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=best-flight-game-20261126-0057)
+[![reward](https://make.fun/badge/best-flight-game-20261126-0057/zhenggangnan33-lang/best-flight-game-20261126-0057/reward.svg)](https://make.fun/bounty/best-flight-game-20261126-0057?utm_source=github&utm_medium=readme&utm_campaign=best-flight-game-20261126-0057)
 
 A rescue floatplane game set in the Lofoten archipelago, Norway. Fly a de Havilland Beaver on floats out of Svolvær, work through **18 named sorties** — rescues, medevacs, supply drops, glacier surveys, a fire to put out and a choir to fly — across real Lofoten places (Reine, Henningsvær, Nusfjord, Å, Røst, Skrova and more), through dawn, fog, storms, blizzards and aurora nights.
 
