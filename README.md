@@ -1,61 +1,66 @@
-[![make.fun](https://make.fun/badge/best-flight-game-20261126-0057.svg)](https://make.fun/bounty/best-flight-game-20261126-0057)
-[![rank](https://make.fun/badge/best-flight-game-20261126-0057/zhenggangnan33-lang/best-flight-game-20261126-0057/rank.svg)](https://make.fun/bounty/best-flight-game-20261126-0057)
-[![reward](https://make.fun/badge/best-flight-game-20261126-0057/zhenggangnan33-lang/best-flight-game-20261126-0057/reward.svg)](https://make.fun/bounty/best-flight-game-20261126-0057)
+# Aurora Squadron — Lofoten Air Rescue
 
-# Lofoten Lifeline
+[![make.fun](https://make.fun/badge.svg)](https://make.fun/bounty/best-flight-game-20261126-0057)
+[![bounty](https://make.fun/bounty/best-flight-game-20261126-0057/badge.svg)](https://make.fun/bounty/best-flight-game-20261126-0057)
 
-A rescue floatplane over the Lofoten Islands, Norway — 12 sorties, 24 rings, 4 storm fronts, 12 refits, 16 feats. Fly a floatplane through gold rings over fjords, past red rorbu cabins and fish racks, and set her down on the water to bring people home before the gale closes the sky.
-
-Made for the [best flight game bounty](https://make.fun/bounty/best-flight-game-20261126-0057) on make.fun.
-
-## Play
-
-Open `game/index.html` in a desktop browser (or serve `game/` with any static server). No network, no build step, no sound files — all audio is synthesised in code.
-
-- **W / S or ↑ / ↓** — throttle up / down
-- **A / D or ← / →** — pitch up / down (climb / descend)
-- **F** — flaps (lower stall speed for landing)
-- **Space** — drop cargo over the yellow mark (supply sorties)
-- **P** — pause · **M** — sound on/off · **Enter** — confirm
-
-## The sorties
-
-| # | Sortie | Route | Goal |
-|---|--------|-------|------|
-| 1 | First Light | Svolvær → Henningsvær | 4 rings, water landing |
-| 2 | Trollfjord Thread | Henningsvær → Trollfjord | 6 rings between the cliffs |
-| 3 | Røst Rescue | Værøy → Røst | Land on the swell, bring the crew home |
-| 4 | Nusfjord Supply Drop | Leknes → Nusfjord | Drop the crate on the yellow mark |
-| 5 | Storm Front One | Kabelvåg → Svinøya | 5 rings in rain and gusts |
-| 6 | Midnight Sun Ferry | Svolvær → Reine | 5 rings by lit instruments |
-| 7 | Kabelvåg Mail Run | Svolvær → Kabelvåg | 7 rings against the clock |
-| 8 | Værøy Evac | Moskenes → Værøy | Rescue on low fuel |
-| 9 | Reine Ring Master | Å → Reine | 8 rings, dead centre for gold |
-| 10 | Storm Front Two | Reine → Moskenes | 6 rings in a heavier gale |
-| 11 | Å to the End of the Road | Svolvær → Å | Long haul with a medicine drop |
-| 12 | The Great Gale | Leknes → Røst | Storm rescue before the front closes |
-
-Every sortie is scored on rings (gold for a dead-centre pass), landing softness, fuel left and hull left, with gold / silver / bronze medals against a par time. Between sorties you pick one of 12 refits — Long-Range Tanks, Storm Radar, High-Lift Flaps, Rescue Winch and more. Sixteen feats track the flying: Thread the Needle, Dead Stick, Storm Rider, Lofoten Legend and the rest.
+A rescue floatplane game set in the Lofoten archipelago, Norway. Fly a de Havilland Beaver on floats out of Svolvær, work through **18 named sorties** — rescues, medevacs, supply drops, glacier surveys, a fire to put out and a choir to fly — across real Lofoten places (Reine, Henningsvær, Nusfjord, Å, Røst, Skrova and more), through dawn, fog, storms, blizzards and aurora nights.
 
 ## What is in the game
 
-- `game/index.html` — the page, a 1280×800 canvas
-- `game/src/main.js` — the loop and the screens (title, briefing, flight, pause, debrief, wreck)
-- `game/src/config.js` — tuning and all named content: 12 places, 12 sorties, 12 refits, 16 feats
-- `game/src/terrain.js` — the Lofoten chain: ridges, villages, rings, landing water
-- `game/src/plane.js` — the flight model: throttle, pitch, lift, stall, fuel, hull
-- `game/src/missions.js` — sortie objectives, scoring and medals
-- `game/src/refits.js` — refit effects and the between-sortie choice
-- `game/src/feats.js` — the sixteen feats and how they unlock
-- `game/src/render.js` — sky, sea, peaks, cabins, rings and the floatplane, all drawn
-- `game/src/hud.js` — lit instruments: altitude, speed, heading, attitude, fuel, hull, compass
-- `game/src/input.js` — keyboard and mouse
-- `game/src/audio.js` — synthesised engine hum, ring chimes and warnings
-- `game/src/shots.js` — the screenshot scenes and the autopilot that flies them
-- `game/src/random.js` — the seeded random source
+- **18 sorties**, each with its own place, people, weather and goal: rescue, drop, survey, scoop-and-drop, photo and grand tour. Gold, silver and bronze medals by time.
+- **20 refits** in the hangar — engine, long-range tanks, de-ice boots, rescue winch, night vision, storm radar, skis and more — bought with rescue credits, each changing how the aeroplane flies.
+- **24 feats** to earn, from First Light to Legend of Lofoten.
+- **Real flying decisions**: throttle and turn discipline, a stall speed, fuel that burns with the throttle, damage from hard landings and storms, icing in cloud, wind drift, and mountains that are really there — fly into one and the sortie ends.
+- **A living archipelago**: eight islands, eighteen villages with lights at night, three floatplane bases, drifting clouds, sea fog, blizzards and the aurora.
+- **A lit HUD**: altitude, speed and heading, throttle, fuel and hull, wind, compass ribbon, mission panel and a minimap — and a glowing target ring ahead.
 
-Screenshots are real renders of the game's own code: open `game/index.html?shot=title|flight|landing|debrief` and the game stages that frame itself.
+## How to play
 
-## License
+| Key | Does |
+| --- | --- |
+| ↑ / ↓ (W / S) | Throttle up / down — above half climbs, below half descends |
+| ← / → (A / D) | Turn |
+| Space | Action (rescue, drop, scoop) and confirm |
+| P / Esc | Pause |
+| H | Hangar (buy refits) |
+| F | Feats |
 
-MIT — see [LICENSE](LICENSE).
+Land on the water to finish a rescue, keep drops between 100 and 400 feet, and watch the fuel — Røst is a long way from home.
+
+## Run it
+
+Serve the game locally and open it in a desktop browser:
+
+```sh
+node serve.ts
+# http://localhost:8080
+```
+
+Or run the entrypoint directly (writes the game and dossier to `out/`):
+
+```sh
+mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+```
+
+`?seed=N` fixes the weather and clouds. `?shot=start|play|night|end` stages a screenshot scene. `?selftest=1` flies the first sortie with the autopilot and reports the result in `window.__selftest`.
+
+## Files
+
+- `game/index.html` — the page, a full-screen canvas
+- `game/src/main.js` — boot, loop and screens
+- `game/src/config.js` — tuning numbers and colours
+- `game/src/places.js` — the islands, villages, bases and weather of Lofoten
+- `game/src/sorties.js` — the 18 sorties
+- `game/src/refits.js` — the 20 hangar refits
+- `game/src/feats.js` — the 24 feats
+- `game/src/terrain.js` — height of the land under any point
+- `game/src/world.js` — the flight model and the sortie engine
+- `game/src/render.js` — the chase view, the HUD, the aurora, every screen
+- `game/src/shots.js` — the autopilot and the staged screenshot scenes
+- `game/src/input.js` — keyboard and pointer
+- `game/src/random.js` — seeded random
+- `game/src/save.js` — progress between visits
+- `main.ts` — the entrypoint: hands the game and its dossier in
+- `serve.ts` — the local server
+
+Made for the [best flight game bounty](https://make.fun/bounty/best-flight-game-20261126-0057) at make.fun.
